@@ -1,6 +1,5 @@
-
 import { useState } from "react"
-import { Flask, Search, Plus, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { TestTube, Search, Plus, Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -76,7 +75,7 @@ export default function Laboratorio() {
       case "completado": return { color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> }
       case "procesando": return { color: "bg-blue-100 text-blue-800", icon: <Clock className="w-4 h-4" /> }
       case "pendiente": return { color: "bg-yellow-100 text-yellow-800", icon: <AlertCircle className="w-4 h-4" /> }
-      default: return { color: "bg-gray-100 text-gray-800", icon: <Flask className="w-4 h-4" /> }
+      default: return { color: "bg-gray-100 text-gray-800", icon: <TestTube className="w-4 h-4" /> }
     }
   }
 
@@ -95,7 +94,7 @@ export default function Laboratorio() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Flask className="w-8 h-8 text-purple-600" />
+            <TestTube className="w-8 h-8 text-purple-600" />
             Laboratorio
           </h1>
           <p className="text-gray-600">Gestión de análisis clínicos y resultados</p>
