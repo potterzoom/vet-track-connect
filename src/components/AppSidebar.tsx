@@ -1,5 +1,5 @@
 
-import { Heart, Users, Calendar, FileText, Image, DollarSign, Home } from "lucide-react"
+import { Heart, Users, Calendar, FileText, Image, DollarSign, Home, Wifi } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -23,6 +23,7 @@ const items = [
   { title: "Historial", url: "/historial", icon: FileText },
   { title: "Imágenes", url: "/imagenes", icon: Image },
   { title: "Facturación", url: "/facturacion", icon: DollarSign },
+  { title: "IoT Monitor", url: "/iot", icon: Wifi },
 ]
 
 export function AppSidebar() {
