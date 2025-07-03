@@ -26,7 +26,8 @@ const items = [
 ]
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar()
+  const { state } = useSidebar()
+  const collapsed = state === "collapsed"
   const location = useLocation()
   const currentPath = location.pathname
 
@@ -37,7 +38,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       className={`${collapsed ? "w-14" : "w-64"} bg-white border-r border-gray-200`}
-      collapsible
+      collapsible="icon"
     >
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
