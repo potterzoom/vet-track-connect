@@ -1,5 +1,5 @@
 
-import { Heart, Users, Calendar, FileText, Image, DollarSign, Home, Wifi } from "lucide-react"
+import { Heart, Users, Calendar, Flask, Pill, ShoppingCart, Home, Wifi } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -20,9 +20,9 @@ const items = [
   { title: "Mascotas", url: "/mascotas", icon: Heart },
   { title: "Dueños", url: "/duenos", icon: Users },
   { title: "Vacunas", url: "/vacunas", icon: Calendar },
-  { title: "Historial", url: "/historial", icon: FileText },
-  { title: "Imágenes", url: "/imagenes", icon: Image },
-  { title: "Facturación", url: "/facturacion", icon: DollarSign },
+  { title: "Farmacia", url: "/farmacia", icon: Pill },
+  { title: "Laboratorio", url: "/laboratorio", icon: Flask },
+  { title: "Marketplace", url: "/marketplace", icon: ShoppingCart },
   { title: "IoT Monitor", url: "/iot", icon: Wifi },
 ]
 

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,9 @@ import Dashboard from "./pages/Dashboard";
 import Mascotas from "./pages/Mascotas";
 import Duenos from "./pages/Duenos";
 import Vacunas from "./pages/Vacunas";
+import Farmacia from "./pages/Farmacia";
+import Laboratorio from "./pages/Laboratorio";
+import Marketplace from "./pages/Marketplace";
 import IoTDashboard from "./pages/IoTDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +29,9 @@ const App = () => (
             <Route path="/mascotas" element={<Mascotas />} />
             <Route path="/duenos" element={<Duenos />} />
             <Route path="/vacunas" element={<Vacunas />} />
+            <Route path="/farmacia" element={<Farmacia />} />
+            <Route path="/laboratorio" element={<Laboratorio />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/iot" element={<IoTDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
