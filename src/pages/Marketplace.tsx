@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { FileText, Search, DollarSign, Package, TrendingUp, Calendar, Users, ShoppingCart } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,6 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AddInvoiceModal } from "@/components/modals/AddInvoiceModal"
+import { ReportsModal } from "@/components/modals/ReportsModal"
 
 interface Factura {
   id: number
@@ -149,14 +150,8 @@ export default function Marketplace() {
           <p className="text-gray-600">Gestión de ventas, facturas y control financiero de la veterinaria</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Calendar className="w-4 h-4 mr-2" />
-            Reportes
-          </Button>
-          <Button className="bg-orange-600 hover:bg-orange-700">
-            <FileText className="w-4 h-4 mr-2" />
-            Nueva Factura
-          </Button>
+          <ReportsModal />
+          <AddInvoiceModal />
         </div>
       </div>
 
