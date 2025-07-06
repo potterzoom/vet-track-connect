@@ -1,10 +1,10 @@
-
 import { useState } from "react"
 import { Pill, Search, Plus, Package, AlertTriangle, CheckCircle, Filter } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { AddProductModal } from "@/components/modals/AddProductModal"
 
 interface Medicamento {
   id: number
@@ -217,10 +217,7 @@ export default function Farmacia() {
           </h1>
           <p className="text-gray-600">Medicamentos, antipulgas, shampoos, vitaminas y balanceados</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Producto
-        </Button>
+        <AddProductModal defaultCategory="Medicamentos" />
       </div>
 
       {/* Search and Filters */}

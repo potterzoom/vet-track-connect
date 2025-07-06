@@ -1,10 +1,10 @@
-
 import { useState } from "react"
 import { Calendar, User, Clock, DollarSign, Search, Plus, Filter, Stethoscope } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { AddServiceModal } from "@/components/modals/AddServiceModal"
 
 interface Servicio {
   id: number
@@ -257,10 +257,7 @@ export default function Servicios() {
           </h1>
           <p className="text-gray-600">Cirugías, consultas, control reproductivo y análisis</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva Cita
-        </Button>
+        <AddServiceModal />
       </div>
 
       {/* Tabs */}

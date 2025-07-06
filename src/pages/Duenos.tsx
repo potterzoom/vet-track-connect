@@ -1,10 +1,10 @@
-
 import { useState } from "react"
 import { Users, Search, Plus, Phone, Mail, MapPin } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { AddOwnerModal } from "@/components/modals/AddOwnerModal"
 
 interface Owner {
   id: number
@@ -75,10 +75,7 @@ export default function Duenos() {
           </h1>
           <p className="text-gray-600">Gestión de clientes de la clínica</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Dueño
-        </Button>
+        <AddOwnerModal />
       </div>
 
       {/* Search */}
