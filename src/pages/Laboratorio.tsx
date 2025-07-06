@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { AddAnalysisModal } from "@/components/modals/AddAnalysisModal"
 
 interface Analisis {
   id: number
@@ -99,10 +100,7 @@ export default function Laboratorio() {
           </h1>
           <p className="text-gray-600">Gestión de análisis clínicos y resultados</p>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Análisis
-        </Button>
+        <AddAnalysisModal />
       </div>
 
       {/* Search */}
