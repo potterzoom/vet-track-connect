@@ -8,6 +8,7 @@ import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Mascotas from "./pages/Mascotas";
 import Duenos from "./pages/Duenos";
+import Servicios from "./pages/Servicios";
 import Vacunas from "./pages/Vacunas";
 import Farmacia from "./pages/Farmacia";
 import Laboratorio from "./pages/Laboratorio";
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/mascotas" element={<Mascotas />} />
             <Route path="/duenos" element={<Duenos />} />
+            <Route path="/servicios" element={<Servicios />} />
             <Route path="/vacunas" element={<Vacunas />} />
             <Route path="/farmacia" element={<Farmacia />} />
             <Route path="/laboratorio" element={<Laboratorio />} />

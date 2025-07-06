@@ -1,6 +1,6 @@
 
 import { useState } from "react"
-import { Pill, Search, Plus, Package, AlertTriangle, CheckCircle } from "lucide-react"
+import { Pill, Search, Plus, Package, AlertTriangle, CheckCircle, Filter } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -17,9 +17,12 @@ interface Medicamento {
   fechaVencimiento: string
   proveedor: string
   categoria: string
+  especie: 'perros' | 'gatos' | 'ambos'
+  descripcion: string
 }
 
 const medicamentos: Medicamento[] = [
+  // Medicamentos
   {
     id: 1,
     nombre: "Amoxicilina 500mg",
@@ -30,7 +33,9 @@ const medicamentos: Medicamento[] = [
     lote: "AMX-2024-001",
     fechaVencimiento: "2025-08-15",
     proveedor: "FarmaVet S.A.",
-    categoria: "Antibióticos"
+    categoria: "Medicamentos",
+    especie: "ambos",
+    descripcion: "Antibiótico de amplio espectro"
   },
   {
     id: 2,
@@ -42,8 +47,11 @@ const medicamentos: Medicamento[] = [
     lote: "MTC-2024-005",
     fechaVencimiento: "2025-12-20",
     proveedor: "VetPharma Ltd.",
-    categoria: "Antiinflamatorios"
+    categoria: "Medicamentos",
+    especie: "ambos",
+    descripcion: "Antiinflamatorio no esteroideo"
   },
+  // Antipulgas y Antiparasitarios
   {
     id: 3,
     nombre: "Frontline Plus",
@@ -54,23 +62,148 @@ const medicamentos: Medicamento[] = [
     lote: "FTL-2024-012",
     fechaVencimiento: "2026-03-10",
     proveedor: "Boehringer Ingelheim",
-    categoria: "Antiparasitarios"
+    categoria: "Antipulgas",
+    especie: "perros",
+    descripcion: "Pipeta antipulgas y garrapatas"
+  },
+  {
+    id: 4,
+    nombre: "Revolution Gatos",
+    principioActivo: "Selamectina",
+    stock: 18,
+    stockMinimo: 12,
+    precio: 28.90,
+    lote: "REV-2024-007",
+    fechaVencimiento: "2025-09-30",
+    proveedor: "Zoetis",
+    categoria: "Antipulgas",
+    especie: "gatos",
+    descripcion: "Pipeta antiparasitaria mensual"
+  },
+  // Shampoos
+  {
+    id: 5,
+    nombre: "Shampoo Medicado Malaseb",
+    principioActivo: "Miconazol + Clorhexidina",
+    stock: 12,
+    stockMinimo: 8,
+    precio: 22.50,
+    lote: "SHP-2024-003",
+    fechaVencimiento: "2026-01-15",
+    proveedor: "Dermcare",
+    categoria: "Shampoos",
+    especie: "ambos",
+    descripcion: "Shampoo antifúngico y antibacteriano"
+  },
+  {
+    id: 6,
+    nombre: "Shampoo Hidratante Avena",
+    principioActivo: "Extracto de Avena",
+    stock: 20,
+    stockMinimo: 10,
+    precio: 18.75,
+    lote: "SHP-2024-008",
+    fechaVencimiento: "2025-11-20",
+    proveedor: "PetCare Plus",
+    categoria: "Shampoos",
+    especie: "ambos",
+    descripcion: "Shampoo hidratante para piel sensible"
+  },
+  // Vitaminas
+  {
+    id: 7,
+    nombre: "Complejo Vitamínico Canino",
+    principioActivo: "Vitaminas A, D, E, B",
+    stock: 35,
+    stockMinimo: 15,
+    precio: 32.00,
+    lote: "VIT-2024-001",
+    fechaVencimiento: "2025-10-05",
+    proveedor: "NutriPet",
+    categoria: "Vitaminas",
+    especie: "perros",
+    descripcion: "Suplemento multivitamínico diario"
+  },
+  {
+    id: 8,
+    nombre: "Omega 3 Felino",
+    principioActivo: "Ácidos Grasos Omega 3",
+    stock: 28,
+    stockMinimo: 12,
+    precio: 24.90,
+    lote: "OMG-2024-004",
+    fechaVencimiento: "2025-07-18",
+    proveedor: "VetNutrition",
+    categoria: "Vitaminas",
+    especie: "gatos",
+    descripcion: "Suplemento para pelaje y articulaciones"
+  },
+  // Balanceados
+  {
+    id: 9,
+    nombre: "Royal Canin Adult Dog",
+    principioActivo: "Alimento completo",
+    stock: 15,
+    stockMinimo: 25,
+    precio: 89.99,
+    lote: "RC-2024-015",
+    fechaVencimiento: "2025-12-31",
+    proveedor: "Royal Canin",
+    categoria: "Balanceados",
+    especie: "perros",
+    descripcion: "Alimento premium para perros adultos"
+  },
+  {
+    id: 10,
+    nombre: "Hill's Prescription Diet Felino",
+    principioActivo: "Alimento terapéutico",
+    stock: 8,
+    stockMinimo: 15,
+    precio: 95.50,
+    lote: "HD-2024-009",
+    fechaVencimiento: "2025-08-25",
+    proveedor: "Hill's Pet Nutrition",
+    categoria: "Balanceados",
+    especie: "gatos",
+    descripcion: "Alimento medicado para problemas renales"
   }
 ]
 
+const categorias = ["Todas", "Medicamentos", "Antipulgas", "Shampoos", "Vitaminas", "Balanceados"]
+const especies = ["Todas", "Perros", "Gatos", "Ambos"]
+
 export default function Farmacia() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("Todas")
+  const [selectedEspecie, setSelectedEspecie] = useState("Todas")
 
-  const filteredMedicamentos = medicamentos.filter(med =>
-    med.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    med.principioActivo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    med.categoria.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredMedicamentos = medicamentos.filter(med => {
+    const matchesSearch = med.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         med.principioActivo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         med.categoria.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesCategory = selectedCategory === "Todas" || med.categoria === selectedCategory
+    
+    const matchesEspecie = selectedEspecie === "Todas" || 
+                          med.especie === selectedEspecie.toLowerCase() ||
+                          med.especie === "ambos"
+    
+    return matchesSearch && matchesCategory && matchesEspecie
+  })
 
   const getStockStatus = (stock: number, minimo: number) => {
     if (stock <= minimo) return { status: "bajo", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> }
     if (stock <= minimo * 1.5) return { status: "medio", color: "bg-yellow-100 text-yellow-800", icon: <Package className="w-4 h-4" /> }
     return { status: "normal", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> }
+  }
+
+  const getEspecieColor = (especie: string) => {
+    switch (especie) {
+      case "perros": return "bg-blue-100 text-blue-800"
+      case "gatos": return "bg-purple-100 text-purple-800"
+      case "ambos": return "bg-green-100 text-green-800"
+      default: return "bg-gray-100 text-gray-800"
+    }
   }
 
   return (
@@ -80,33 +213,68 @@ export default function Farmacia() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <Pill className="w-8 h-8 text-green-600" />
-            Farmacia
+            Farmacia Veterinaria
           </h1>
-          <p className="text-gray-600">Gestión de medicamentos y stock</p>
+          <p className="text-gray-600">Medicamentos, antipulgas, shampoos, vitaminas y balanceados</p>
         </div>
         <Button className="bg-green-600 hover:bg-green-700">
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo Medicamento
+          Nuevo Producto
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-        <Input
-          placeholder="Buscar medicamentos..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search and Filters */}
+      <div className="space-y-4">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Categorías:</span>
+          </div>
+          {categorias.map((categoria) => (
+            <Button
+              key={categoria}
+              variant={selectedCategory === categoria ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedCategory(categoria)}
+            >
+              {categoria}
+            </Button>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">Especies:</span>
+          </div>
+          {especies.map((especie) => (
+            <Button
+              key={especie}
+              variant={selectedEspecie === especie ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedEspecie(especie)}
+            >
+              {especie}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-gray-900">{medicamentos.length}</div>
-            <p className="text-sm text-gray-600">Total Medicamentos</p>
+            <p className="text-sm text-gray-600">Total Productos</p>
           </CardContent>
         </Card>
         <Card>
@@ -119,8 +287,18 @@ export default function Farmacia() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-yellow-600">2</div>
-            <p className="text-sm text-gray-600">Próximos a Vencer</p>
+            <div className="text-2xl font-bold text-yellow-600">
+              {categorias.length - 1}
+            </div>
+            <p className="text-sm text-gray-600">Categorías</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-blue-600">
+              {medicamentos.filter(m => m.especie === 'perros' || m.especie === 'ambos').length}
+            </div>
+            <p className="text-sm text-gray-600">Para Perros</p>
           </CardContent>
         </Card>
         <Card>
@@ -133,7 +311,7 @@ export default function Farmacia() {
         </Card>
       </div>
 
-      {/* Medicamentos List */}
+      {/* Products List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredMedicamentos.map((med) => {
           const stockInfo = getStockStatus(med.stock, med.stockMinimo)
@@ -141,14 +319,20 @@ export default function Farmacia() {
             <Card key={med.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-lg">{med.nombre}</CardTitle>
                     <p className="text-sm text-gray-600">{med.principioActivo}</p>
+                    <p className="text-xs text-gray-500 mt-1">{med.descripcion}</p>
                   </div>
-                  <Badge className={`${stockInfo.color} flex items-center gap-1`}>
-                    {stockInfo.icon}
-                    {med.stock}
-                  </Badge>
+                  <div className="flex flex-col gap-1">
+                    <Badge className={`${stockInfo.color} flex items-center gap-1`}>
+                      {stockInfo.icon}
+                      {med.stock}
+                    </Badge>
+                    <Badge className={getEspecieColor(med.especie)}>
+                      {med.especie}
+                    </Badge>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -160,7 +344,7 @@ export default function Farmacia() {
                     </div>
                     <div>
                       <p className="text-gray-600">Precio:</p>
-                      <p className="font-medium">${med.precio}</p>
+                      <p className="font-medium text-lg">${med.precio}</p>
                     </div>
                   </div>
                   <div className="text-sm">
