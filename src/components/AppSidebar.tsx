@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   Heart,
@@ -13,6 +14,8 @@ import {
   LogOut,
   ChevronsLeft,
   Syringe,
+  Shield,
+  ShieldAlert,
 } from "lucide-react"
 import { useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
@@ -50,6 +53,11 @@ const menuItems = [
     title: "Gestor de Calendario",
     url: "/calendar",
     icon: Calendar,
+  },
+  {
+    title: "Control Policial",
+    url: "/control-policial",
+    icon: Shield,
   },
   {
     title: "Laboratorio",

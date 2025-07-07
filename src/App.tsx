@@ -15,6 +15,7 @@ import IoTDashboard from "@/pages/IoTDashboard"
 import Duenos from "@/pages/Duenos"
 import Vacunas from "@/pages/Vacunas"
 import Calendar from "@/pages/Calendar"
+import ControlPolicial from "@/pages/ControlPolicial"
 
 const queryClient = new QueryClient()
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="duenos" element={<Duenos />} />
               <Route path="vacunas" element={<Vacunas />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="control-policial" element={<ControlPolicial />} />
               <Route path="laboratorio" element={<Laboratorio />} />
               <Route path="servicios" element={<Servicios />} />
               <Route path="farmacia" element={<Farmacia />} />
