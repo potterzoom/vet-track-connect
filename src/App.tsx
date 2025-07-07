@@ -1,6 +1,8 @@
+
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "@/components/ui/toaster"
+import { AuthProvider } from "@/hooks/useAuth"
 import Layout from "@/layouts/Layout"
 import Dashboard from "@/pages/Dashboard"
 import Mascotas from "@/pages/Mascotas"
@@ -19,24 +21,26 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="mascotas" element={<Mascotas />} />
-            <Route path="duenos" element={<Duenos />} />
-            <Route path="vacunas" element={<Vacunas />} />
-            <Route path="calendar" element={<Calendar />} />
-            <Route path="laboratorio" element={<Laboratorio />} />
-            <Route path="servicios" element={<Servicios />} />
-            <Route path="farmacia" element={<Farmacia />} />
-            <Route path="marketplace" element={<Marketplace />} />
-            <Route path="iot-dashboard" element={<IoTDashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="mascotas" element={<Mascotas />} />
+              <Route path="duenos" element={<Duenos />} />
+              <Route path="vacunas" element={<Vacunas />} />
+              <Route path="calendar" element={<Calendar />} />
+              <Route path="laboratorio" element={<Laboratorio />} />
+              <Route path="servicios" element={<Servicios />} />
+              <Route path="farmacia" element={<Farmacia />} />
+              <Route path="marketplace" element={<Marketplace />} />
+              <Route path="iot-dashboard" element={<IoTDashboard />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
