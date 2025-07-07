@@ -1,9 +1,11 @@
+
 import { useState } from "react"
 import { TestTube, Search, Plus, Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AddAnalysisModal } from "@/components/modals/AddAnalysisModal"
 
 interface Analisis {
@@ -64,12 +66,15 @@ const analisis: Analisis[] = [
 
 export default function Laboratorio() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [showAll, setShowAll] = useState(false)
 
   const filteredAnalisis = analisis.filter(item =>
     item.mascota.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.dueno.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.tipoAnalisis.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const displayedAnalisis = showAll ? filteredAnalisis : filteredAnalisis.slice(0, 5)
 
   const getEstadoInfo = (estado: string) => {
     switch (estado) {
@@ -82,10 +87,10 @@ export default function Laboratorio() {
 
   const getPrioridadColor = (prioridad: string) => {
     switch (prioridad) {
-      case "alta": return "border-l-4 border-red-500"
-      case "media": return "border-l-4 border-yellow-500"
-      case "normal": return "border-l-4 border-green-500"
-      default: return "border-l-4 border-gray-500"
+      case "alta": return "text-red-600"
+      case "media": return "text-yellow-600"
+      case "normal": return "text-green-600"
+      default: return "text-gray-600"
     }
   }
 
@@ -148,75 +153,82 @@ export default function Laboratorio() {
         </Card>
       </div>
 
-      {/* Análisis List */}
-      <div className="space-y-4">
-        {filteredAnalisis.map((item) => {
-          const estadoInfo = getEstadoInfo(item.estado)
-          return (
-            <Card key={item.id} className={`hover:shadow-lg transition-shadow ${getPrioridadColor(item.prioridad)}`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">{item.tipoAnalisis}</CardTitle>
-                    <p className="text-sm text-gray-600">{item.mascota} - {item.dueno}</p>
-                  </div>
-                  <Badge className={`${estadoInfo.color} flex items-center gap-1`}>
-                    {estadoInfo.icon}
-                    {item.estado}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-xs text-gray-500">Veterinario</p>
-                      <p className="text-sm font-medium">{item.veterinario}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Laboratorio</p>
-                      <p className="text-sm font-medium">{item.laboratorio}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-xs text-gray-500">Fecha Solicitud</p>
-                      <p className="text-sm font-medium">{new Date(item.fechaSolicitud).toLocaleDateString('es-ES')}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Fecha Resultado</p>
-                      <p className="text-sm font-medium">
-                        {item.fechaResultado ? new Date(item.fechaResultado).toLocaleDateString('es-ES') : 'Pendiente'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-xs text-gray-500">Prioridad</p>
-                      <p className={`text-sm font-medium capitalize ${
-                        item.prioridad === 'alta' ? 'text-red-600' : 
-                        item.prioridad === 'media' ? 'text-yellow-600' : 
-                        'text-green-600'
-                      }`}>{item.prioridad}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Costo</p>
-                      <p className="text-sm font-medium">${item.costo}</p>
-                    </div>
-                  </div>
-                </div>
-                {item.estado === "completado" && (
-                  <div className="mt-4 pt-3 border-t border-gray-100">
-                    <Button variant="outline" size="sm">
-                      Ver Resultados
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      {/* Análisis Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Análisis de Laboratorio</span>
+            <Badge variant="outline">{filteredAnalisis.length} total</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Análisis</TableHead>
+                <TableHead>Mascota</TableHead>
+                <TableHead>Dueño</TableHead>
+                <TableHead>Veterinario</TableHead>
+                <TableHead>Laboratorio</TableHead>
+                <TableHead>Fecha Solicitud</TableHead>
+                <TableHead>Fecha Resultado</TableHead>
+                <TableHead>Prioridad</TableHead>
+                <TableHead>Costo</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedAnalisis.map((item) => {
+                const estadoInfo = getEstadoInfo(item.estado)
+                return (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.tipoAnalisis}</TableCell>
+                    <TableCell>{item.mascota}</TableCell>
+                    <TableCell>{item.dueno}</TableCell>
+                    <TableCell className="text-sm">{item.veterinario}</TableCell>
+                    <TableCell className="text-sm">{item.laboratorio}</TableCell>
+                    <TableCell>{new Date(item.fechaSolicitud).toLocaleDateString('es-ES')}</TableCell>
+                    <TableCell>
+                      {item.fechaResultado ? new Date(item.fechaResultado).toLocaleDateString('es-ES') : 'Pendiente'}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`font-medium capitalize ${getPrioridadColor(item.prioridad)}`}>
+                        {item.prioridad}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium">${item.costo}</TableCell>
+                    <TableCell>
+                      <Badge className={`${estadoInfo.color} flex items-center gap-1 w-fit`}>
+                        {estadoInfo.icon}
+                        {item.estado}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {item.estado === "completado" && (
+                        <Button variant="outline" size="sm">
+                          Ver Resultados
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+          
+          {filteredAnalisis.length > 5 && (
+            <div className="mt-4 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? 'Mostrar menos' : `Ver todos (${filteredAnalisis.length - 5} más)`}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,9 +1,11 @@
+
 import { useState } from "react"
 import { Pill, Search, Plus, Package, AlertTriangle, CheckCircle, Filter } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AddProductModal } from "@/components/modals/AddProductModal"
 
 interface Medicamento {
@@ -176,6 +178,7 @@ export default function Farmacia() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("Todas")
   const [selectedEspecie, setSelectedEspecie] = useState("Todas")
+  const [showAll, setShowAll] = useState(false)
 
   const filteredMedicamentos = medicamentos.filter(med => {
     const matchesSearch = med.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -190,6 +193,8 @@ export default function Farmacia() {
     
     return matchesSearch && matchesCategory && matchesEspecie
   })
+
+  const displayedMedicamentos = showAll ? filteredMedicamentos : filteredMedicamentos.slice(0, 5)
 
   const getStockStatus = (stock: number, minimo: number) => {
     if (stock <= minimo) return { status: "bajo", color: "bg-red-100 text-red-800", icon: <AlertTriangle className="w-4 h-4" /> }
@@ -308,60 +313,82 @@ export default function Farmacia() {
         </Card>
       </div>
 
-      {/* Products List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredMedicamentos.map((med) => {
-          const stockInfo = getStockStatus(med.stock, med.stockMinimo)
-          return (
-            <Card key={med.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{med.nombre}</CardTitle>
-                    <p className="text-sm text-gray-600">{med.principioActivo}</p>
-                    <p className="text-xs text-gray-500 mt-1">{med.descripcion}</p>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Badge className={`${stockInfo.color} flex items-center gap-1`}>
-                      {stockInfo.icon}
-                      {med.stock}
-                    </Badge>
-                    <Badge className={getEspecieColor(med.especie)}>
-                      {med.especie}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p className="text-gray-600">Categoría:</p>
-                      <p className="font-medium">{med.categoria}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-600">Precio:</p>
-                      <p className="font-medium text-lg">${med.precio}</p>
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <p className="text-gray-600">Lote: {med.lote}</p>
-                    <p className="text-gray-600">Vence: {new Date(med.fechaVencimiento).toLocaleDateString('es-ES')}</p>
-                    <p className="text-gray-600">Proveedor: {med.proveedor}</p>
-                  </div>
-                  {med.stock <= med.stockMinimo && (
-                    <div className="bg-red-50 border border-red-200 rounded p-2">
-                      <p className="text-red-700 text-xs font-medium">
-                        ⚠️ Stock bajo - Mínimo: {med.stockMinimo}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+      {/* Products Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Inventario de Productos</span>
+            <Badge variant="outline">{filteredMedicamentos.length} productos</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Producto</TableHead>
+                <TableHead>Categoría</TableHead>
+                <TableHead>Principio Activo</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead>Lote</TableHead>
+                <TableHead>Vencimiento</TableHead>
+                <TableHead>Especie</TableHead>
+                <TableHead>Proveedor</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedMedicamentos.map((med) => {
+                const stockInfo = getStockStatus(med.stock, med.stockMinimo)
+                return (
+                  <TableRow key={med.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{med.nombre}</div>
+                        <div className="text-sm text-gray-600">{med.descripcion}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{med.categoria}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">{med.principioActivo}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Badge className={`${stockInfo.color} flex items-center gap-1`}>
+                          {stockInfo.icon}
+                          {med.stock}
+                        </Badge>
+                        {med.stock <= med.stockMinimo && (
+                          <span className="text-xs text-red-600">Min: {med.stockMinimo}</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">${med.precio}</TableCell>
+                    <TableCell className="text-sm font-mono">{med.lote}</TableCell>
+                    <TableCell className="text-sm">{new Date(med.fechaVencimiento).toLocaleDateString('es-ES')}</TableCell>
+                    <TableCell>
+                      <Badge className={getEspecieColor(med.especie)}>
+                        {med.especie}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">{med.proveedor}</TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+          
+          {filteredMedicamentos.length > 5 && (
+            <div className="mt-4 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? 'Mostrar menos' : `Ver todos (${filteredMedicamentos.length - 5} más)`}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

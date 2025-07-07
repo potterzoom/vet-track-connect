@@ -1,9 +1,11 @@
+
 import { useState } from "react"
 import { Calendar, User, Clock, DollarSign, Search, Plus, Filter, Stethoscope } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AddServiceModal } from "@/components/modals/AddServiceModal"
 
 interface Servicio {
@@ -209,6 +211,8 @@ export default function Servicios() {
   const [selectedCategory, setSelectedCategory] = useState("Todas")
   const [selectedEspecie, setSelectedEspecie] = useState("Todas")
   const [activeTab, setActiveTab] = useState<"servicios" | "citas">("servicios")
+  const [showAllServicios, setShowAllServicios] = useState(false)
+  const [showAllCitas, setShowAllCitas] = useState(false)
 
   const filteredServicios = servicios.filter(servicio => {
     const matchesSearch = servicio.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -223,6 +227,15 @@ export default function Servicios() {
     
     return matchesSearch && matchesCategory && matchesEspecie
   })
+
+  const filteredCitas = citas.filter(cita => 
+    cita.servicioNombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cita.petName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cita.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const displayedServicios = showAllServicios ? filteredServicios : filteredServicios.slice(0, 5)
+  const displayedCitas = showAllCitas ? filteredCitas : filteredCitas.slice(0, 5)
 
   const getEstadoColor = (estado: string) => {
     return estado === "disponible" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
@@ -356,126 +369,137 @@ export default function Servicios() {
             </Card>
           </div>
 
-          {/* Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredServicios.map((servicio) => (
-              <Card key={servicio.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{servicio.nombre}</CardTitle>
-                      <p className="text-sm text-gray-600">{servicio.descripcion}</p>
-                      <Badge className="mt-1" variant="outline">
-                        {servicio.categoria}
-                      </Badge>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <Badge className={getEstadoColor(servicio.estado)}>
-                        {servicio.estado}
-                      </Badge>
-                      <Badge className={getEspecieColor(servicio.especieCompatible)}>
-                        {servicio.especieCompatible}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-gray-600">Precio:</p>
-                        <p className="font-bold text-lg">${servicio.precio}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-600">Duración:</p>
-                        <p className="font-medium">{servicio.duracion} min</p>
-                      </div>
-                    </div>
-                    
-                    <div className="text-sm">
-                      <p className="text-gray-600">Veterinario: {servicio.veterinario}</p>
-                      {servicio.requiereAnestesia && (
-                        <p className="text-orange-600 font-medium">⚠️ Requiere anestesia</p>
-                      )}
-                    </div>
-
-                    {servicio.estado === "no_disponible" && servicio.proximaDisponibilidad && (
-                      <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                        <p className="text-yellow-700 text-xs font-medium">
-                          📅 Próxima disponibilidad: {new Date(servicio.proximaDisponibilidad).toLocaleDateString('es-ES')}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        className="flex-1" 
-                        disabled={servicio.estado === "no_disponible"}
-                      >
-                        Agendar Cita
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        Detalles
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Services Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Servicios Disponibles</span>
+                <Badge variant="outline">{filteredServicios.length} total</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Servicio</TableHead>
+                    <TableHead>Categoría</TableHead>
+                    <TableHead>Veterinario</TableHead>
+                    <TableHead>Precio</TableHead>
+                    <TableHead>Duración</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Especie</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {displayedServicios.map((servicio) => (
+                    <TableRow key={servicio.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{servicio.nombre}</div>
+                          <div className="text-sm text-gray-600">{servicio.descripcion}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{servicio.categoria}</Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">{servicio.veterinario}</TableCell>
+                      <TableCell className="font-medium">${servicio.precio}</TableCell>
+                      <TableCell>{servicio.duracion} min</TableCell>
+                      <TableCell>
+                        <Badge className={getEstadoColor(servicio.estado)}>
+                          {servicio.estado}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getEspecieColor(servicio.especieCompatible)}>
+                          {servicio.especieCompatible}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button size="sm" disabled={servicio.estado === "no_disponible"}>
+                            Agendar
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            Ver
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {filteredServicios.length > 5 && (
+                <div className="mt-4 text-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAllServicios(!showAllServicios)}
+                  >
+                    {showAllServicios ? 'Mostrar menos' : `Ver todos (${filteredServicios.length - 5} más)`}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </>
       )}
 
       {activeTab === "citas" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            {citas.map((cita) => (
-              <Card key={cita.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <h3 className="font-semibold text-lg">{cita.servicioNombre}</h3>
-                          <p className="text-gray-600">{cita.petName} - {cita.ownerName}</p>
-                        </div>
-                        <Badge className={getCitaEstadoColor(cita.estado)}>
-                          {cita.estado}
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-4 gap-4 mt-3 text-sm">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4 text-gray-500" />
-                          {new Date(cita.fecha).toLocaleDateString('es-ES')}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4 text-gray-500" />
-                          {cita.hora}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <User className="w-4 h-4 text-gray-500" />
-                          {cita.veterinario}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4 text-gray-500" />
-                          ${cita.precio}
-                        </div>
-                      </div>
-
-                      {cita.notas && (
-                        <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
-                          <strong>Notas:</strong> {cita.notas}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Citas Programadas</span>
+              <Badge variant="outline">{filteredCitas.length} total</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Servicio</TableHead>
+                  <TableHead>Mascota</TableHead>
+                  <TableHead>Dueño</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Hora</TableHead>
+                  <TableHead>Veterinario</TableHead>
+                  <TableHead>Precio</TableHead>
+                  <TableHead>Estado</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {displayedCitas.map((cita) => (
+                  <TableRow key={cita.id}>
+                    <TableCell className="font-medium">{cita.servicioNombre}</TableCell>
+                    <TableCell>{cita.petName}</TableCell>
+                    <TableCell>{cita.ownerName}</TableCell>
+                    <TableCell>{new Date(cita.fecha).toLocaleDateString('es-ES')}</TableCell>
+                    <TableCell>{cita.hora}</TableCell>
+                    <TableCell>{cita.veterinario}</TableCell>
+                    <TableCell className="font-medium">${cita.precio}</TableCell>
+                    <TableCell>
+                      <Badge className={getCitaEstadoColor(cita.estado)}>
+                        {cita.estado}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            
+            {filteredCitas.length > 5 && (
+              <div className="mt-4 text-center">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAllCitas(!showAllCitas)}
+                >
+                  {showAllCitas ? 'Mostrar menos' : `Ver todas (${filteredCitas.length - 5} más)`}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   )
