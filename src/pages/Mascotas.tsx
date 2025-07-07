@@ -1,3 +1,4 @@
+
 import { useState } from "react"
 import { Heart, Search, Filter, Calendar, User, Stethoscope } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { AddPetModal } from "@/components/modals/AddPetModal"
+import { UnifiedRegistrationModal } from "@/components/modals/UnifiedRegistrationModal"
 
 interface Pet {
   id: number
@@ -19,8 +20,11 @@ interface Pet {
   lastVisit: string
   status: string
   nextVaccine: string
+  microchip: string
+  ownerId: number
 }
 
+// Datos más realistas y conectados con dueños
 const pets: Pet[] = [
   {
     id: 1,
@@ -28,51 +32,119 @@ const pets: Pet[] = [
     species: "perro",
     breed: "Golden Retriever",
     age: "3 años",
-    weight: "28 kg",
-    owner: "María García",
-    phone: "+1 234-567-8901",
-    lastVisit: "2024-06-15",
+    weight: "28.5 kg",
+    owner: "María García Rodríguez",
+    phone: "+57 300-234-5678",
+    lastVisit: "2024-06-28",
     status: "saludable",
-    nextVaccine: "2024-08-15"
+    nextVaccine: "2024-08-15",
+    microchip: "MCH001234567",
+    ownerId: 1
   },
   {
     id: 2,
     name: "Luna",
     species: "gato",
     breed: "Persa",
-    age: "2 años",
-    weight: "4.5 kg",
-    owner: "Carlos López",
-    phone: "+1 234-567-8902",
-    lastVisit: "2024-06-18",
+    age: "2 años 4 meses",
+    weight: "4.2 kg",
+    owner: "Carlos López Mendoza",
+    phone: "+57 301-345-6789",
+    lastVisit: "2024-06-25",
     status: "tratamiento",
-    nextVaccine: "2024-07-20"
+    nextVaccine: "2024-07-20",
+    microchip: "MCH001234568",
+    ownerId: 2
   },
   {
     id: 3,
     name: "Buddy",
     species: "perro",
-    breed: "Labrador",
-    age: "5 años",
-    weight: "32 kg",
-    owner: "Ana Martínez",
-    phone: "+1 234-567-8903",
-    lastVisit: "2024-06-20",
+    breed: "Labrador Chocolate",
+    age: "5 años 2 meses",
+    weight: "32.1 kg",
+    owner: "Ana Martínez Silva",
+    phone: "+57 302-456-7890",
+    lastVisit: "2024-07-02",
     status: "saludable",
-    nextVaccine: "2024-09-10"
+    nextVaccine: "2024-09-10",
+    microchip: "MCH001234569",
+    ownerId: 3
   },
   {
     id: 4,
     name: "Mimi",
     species: "gato",
     breed: "Siamés",
-    age: "4 años",
+    age: "4 años 8 meses",
     weight: "3.8 kg",
-    owner: "Pedro Ruiz",
-    phone: "+1 234-567-8904",
-    lastVisit: "2024-06-10",
+    owner: "Pedro Ruiz Castro",
+    phone: "+57 303-567-8901",
+    lastVisit: "2024-06-30",
     status: "cita_pendiente",
-    nextVaccine: "2024-07-15"
+    nextVaccine: "2024-07-15",
+    microchip: "MCH001234570",
+    ownerId: 4
+  },
+  {
+    id: 5,
+    name: "Rocky",
+    species: "perro",
+    breed: "Pastor Alemán",
+    age: "6 años",
+    weight: "35.7 kg",
+    owner: "Laura Fernández Vega",
+    phone: "+57 304-678-9012",
+    lastVisit: "2024-07-01",
+    status: "saludable",
+    nextVaccine: "2024-08-01",
+    microchip: "MCH001234571",
+    ownerId: 5
+  },
+  {
+    id: 6,
+    name: "Whiskers",
+    species: "gato",
+    breed: "Maine Coon",
+    age: "1 año 6 meses",
+    weight: "5.1 kg",
+    owner: "Miguel Santos Herrera",
+    phone: "+57 305-789-0123",
+    lastVisit: "2024-06-22",
+    status: "tratamiento",
+    nextVaccine: "2024-07-25",
+    microchip: "MCH001234572",
+    ownerId: 6
+  },
+  {
+    id: 7,
+    name: "Bella",
+    species: "perro",
+    breed: "Bulldog Francés",
+    age: "2 años 8 meses",
+    weight: "12.3 kg",
+    owner: "Carmen Jiménez Morales",
+    phone: "+57 306-890-1234",
+    lastVisit: "2024-07-03",
+    status: "cita_pendiente",
+    nextVaccine: "2024-07-18",
+    microchip: "MCH001234573",
+    ownerId: 7
+  },
+  {
+    id: 8,
+    name: "Felix",
+    species: "gato",
+    breed: "Bengalí",
+    age: "3 años 3 meses",
+    weight: "4.7 kg",
+    owner: "Roberto Díaz Peña",
+    phone: "+57 307-901-2345",
+    lastVisit: "2024-06-27",
+    status: "saludable",
+    nextVaccine: "2024-08-05",
+    microchip: "MCH001234574",
+    ownerId: 8
   }
 ]
 
@@ -88,7 +160,8 @@ export default function Mascotas() {
   const filteredPets = pets.filter(pet => {
     const matchesSearch = pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          pet.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pet.breed.toLowerCase().includes(searchTerm.toLowerCase())
+                         pet.breed.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         pet.microchip.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = selectedStatus === "Todos" || 
                          pet.status.toLowerCase().replace("_", " ") === selectedStatus.toLowerCase()
@@ -132,7 +205,7 @@ export default function Mascotas() {
           </h1>
           <p className="text-gray-600">Gestión completa de mascotas registradas</p>
         </div>
-        <AddPetModal />
+        <UnifiedRegistrationModal defaultTab="pet" />
       </div>
 
       {/* Search and Filters */}
@@ -140,7 +213,7 @@ export default function Mascotas() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Buscar mascotas..."
+            placeholder="Buscar mascotas, dueños o microchip..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -241,10 +314,11 @@ export default function Mascotas() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nombre</TableHead>
+                  <TableHead>Mascota</TableHead>
                   <TableHead>Especie/Raza</TableHead>
                   <TableHead>Edad/Peso</TableHead>
                   <TableHead>Dueño</TableHead>
+                  <TableHead>Microchip</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Última Visita</TableHead>
                   <TableHead>Próxima Vacuna</TableHead>
@@ -257,7 +331,10 @@ export default function Mascotas() {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <Heart className="w-4 h-4 text-red-500" />
-                        {pet.name}
+                        <div>
+                          <p className="font-semibold">{pet.name}</p>
+                          <p className="text-xs text-gray-500">ID: {pet.id}</p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -282,6 +359,11 @@ export default function Mascotas() {
                         </div>
                         <p className="text-xs text-gray-500">{pet.phone}</p>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        {pet.microchip}
+                      </code>
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(pet.status)}>
