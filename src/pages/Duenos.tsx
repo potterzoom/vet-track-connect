@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { UnifiedRegistrationModal } from "@/components/modals/UnifiedRegistrationModal"
 
 interface Owner {
@@ -131,6 +132,7 @@ const owners: Owner[] = [
 
 export default function Duenos() {
   const [searchTerm, setSearchTerm] = useState("")
+  const [showAll, setShowAll] = useState(false)
 
   const filteredOwners = owners.filter(owner =>
     owner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,6 +141,8 @@ export default function Duenos() {
     owner.cedula.includes(searchTerm) ||
     owner.pets.some(pet => pet.toLowerCase().includes(searchTerm.toLowerCase()))
   )
+
+  const displayedOwners = showAll ? filteredOwners : filteredOwners.slice(0, 5)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -210,72 +214,99 @@ export default function Duenos() {
         </Card>
       </div>
 
-      {/* Owners List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredOwners.map((owner) => (
-          <Card key={owner.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">{owner.name}</CardTitle>
-                <div className="flex gap-2">
-                  <Badge variant="outline">
-                    {owner.petsCount} mascota{owner.petsCount !== 1 ? 's' : ''}
-                  </Badge>
-                  <Badge variant="secondary">
-                    {formatCurrency(owner.totalSpent)}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <CreditCard className="w-4 h-4" />
-                  <span className="text-sm font-mono">{owner.cedula}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Phone className="w-4 h-4" />
-                  <span className="text-sm">{owner.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Mail className="w-4 h-4" />
-                  <span className="text-sm">{owner.email}</span>
-                </div>
-                <div className="flex items-start gap-2 text-gray-600">
-                  <MapPin className="w-4 h-4 mt-0.5" />
-                  <span className="text-sm">{owner.address}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Briefcase className="w-4 h-4" />
-                  <span className="text-sm">{owner.occupation}</span>
-                </div>
-                
-                {/* Mascotas del dueño */}
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-sm font-medium text-gray-700 mb-1">Mascotas:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {owner.pets.map((pet, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {pet}
+      {/* Owners Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Registro de Dueños</span>
+            <Badge variant="outline">{filteredOwners.length} total</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Cédula</TableHead>
+                <TableHead>Contacto</TableHead>
+                <TableHead>Dirección</TableHead>
+                <TableHead>Ocupación</TableHead>
+                <TableHead>Mascotas</TableHead>
+                <TableHead>Última Visita</TableHead>
+                <TableHead>Total Gastado</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedOwners.map((owner) => (
+                <TableRow key={owner.id}>
+                  <TableCell className="font-medium">
+                    <div>
+                      <p>{owner.name}</p>
+                      <p className="text-xs text-gray-500">{owner.email}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">{owner.cedula}</TableCell>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        <span>{owner.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <Mail className="w-3 h-3" />
+                        <span className="truncate">{owner.email.split('@')[0]}@...</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-start gap-1 text-sm">
+                      <MapPin className="w-3 h-3 mt-0.5" />
+                      <span className="truncate max-w-32">{owner.address}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Briefcase className="w-3 h-3" />
+                      <span>{owner.occupation}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {owner.pets.map((pet, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {pet}
+                        </Badge>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {new Date(owner.lastVisit).toLocaleDateString('es-ES')}
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600">{formatCurrency(owner.totalSpent)}</p>
+                      <Badge variant="secondary" className="text-xs">
+                        {owner.petsCount} mascota{owner.petsCount !== 1 ? 's' : ''}
                       </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-xs text-gray-500">
-                    Última visita: {new Date(owner.lastVisit).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          {filteredOwners.length > 5 && (
+            <div className="mt-4 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? 'Mostrar menos' : `Ver todos (${filteredOwners.length - 5} más)`}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

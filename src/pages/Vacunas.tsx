@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { VaccineBlockchainCard } from "@/components/VaccineBlockchainCard"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { AddVaccineModal } from "@/components/AddVaccineModal"
 
 const mockVaccines = [
@@ -150,6 +150,7 @@ export default function Vacunas() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState<"todas" | "perro" | "gato">("todas")
   const [selectedStatus, setSelectedStatus] = useState<"todos" | "vigente" | "proximo" | "vencido">("todos")
+  const [showAll, setShowAll] = useState(false)
 
   const filteredVaccines = mockVaccines.filter(vaccine => {
     const matchesSearch = vaccine.petName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -161,6 +162,12 @@ export default function Vacunas() {
     
     return matchesSearch && matchesSpecies && matchesStatus
   })
+
+  // Ordenar por fecha más reciente y mostrar solo 5 si showAll es false
+  const sortedVaccines = filteredVaccines.sort((a, b) => 
+    new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
+  )
+  const displayedVaccines = showAll ? sortedVaccines : sortedVaccines.slice(0, 5)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -344,69 +351,81 @@ export default function Vacunas() {
         </Card>
       </div>
 
-      {/* Vaccines List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredVaccines.map((vaccine) => (
-          <Card key={vaccine.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{vaccine.petName}</CardTitle>
-                  <p className="text-sm text-gray-600">{vaccine.ownerName}</p>
-                  <Badge className={`mt-1 ${getSpeciesColor(vaccine.species)}`}>
-                    {vaccine.species}
-                  </Badge>
-                </div>
-                <Badge className={`${getStatusColor(vaccine.status)} flex items-center gap-1`}>
-                  {getStatusIcon(vaccine.status)}
-                  {vaccine.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <h4 className="font-medium text-gray-900">{vaccine.vaccine}</h4>
-                  <p className="text-sm text-gray-600">Dosis: {vaccine.dose}</p>
-                  <p className="text-sm text-gray-600">Veterinario: {vaccine.veterinarian}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="text-gray-600">Aplicada:</p>
-                    <p className="font-medium">{new Date(vaccine.appliedDate).toLocaleDateString('es-ES')}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Próxima:</p>
-                    <p className="font-medium">{new Date(vaccine.nextDue).toLocaleDateString('es-ES')}</p>
-                  </div>
-                </div>
-
-                <div className="text-sm">
-                  <p className="text-gray-600">Lote: {vaccine.lot}</p>
-                  <p className="text-gray-600 truncate">Hash: {vaccine.blockchainHash.substring(0, 20)}...</p>
-                </div>
-
-                {vaccine.status === "vencido" && (
-                  <div className="bg-red-50 border border-red-200 rounded p-2">
-                    <p className="text-red-700 text-xs font-medium">
-                      ⚠️ Vacuna vencida - Requiere refuerzo urgente
-                    </p>
-                  </div>
-                )}
-
-                {vaccine.status === "proximo" && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                    <p className="text-yellow-700 text-xs font-medium">
-                      📅 Próxima a vencer - Programar refuerzo
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Vaccines Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Registro de Vacunas</span>
+            <Badge variant="outline">{filteredVaccines.length} total</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Mascota</TableHead>
+                <TableHead>Dueño</TableHead>
+                <TableHead>Especie</TableHead>
+                <TableHead>Vacuna</TableHead>
+                <TableHead>Fecha Aplicada</TableHead>
+                <TableHead>Próxima Dosis</TableHead>
+                <TableHead>Veterinario</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Blockchain</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedVaccines.map((vaccine) => (
+                <TableRow key={vaccine.id}>
+                  <TableCell className="font-medium">{vaccine.petName}</TableCell>
+                  <TableCell>{vaccine.ownerName}</TableCell>
+                  <TableCell>
+                    <Badge className={getSpeciesColor(vaccine.species)}>
+                      {vaccine.species}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{vaccine.vaccine}</p>
+                      <p className="text-xs text-gray-500">Dosis: {vaccine.dose}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{new Date(vaccine.appliedDate).toLocaleDateString('es-ES')}</TableCell>
+                  <TableCell>
+                    <div className={vaccine.status === "vencido" ? "text-red-600 font-medium" : vaccine.status === "proximo" ? "text-yellow-600 font-medium" : ""}>
+                      {new Date(vaccine.nextDue).toLocaleDateString('es-ES')}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm">{vaccine.veterinarian}</TableCell>
+                  <TableCell>
+                    <Badge className={`${getStatusColor(vaccine.status)} flex items-center gap-1 w-fit`}>
+                      {getStatusIcon(vaccine.status)}
+                      {vaccine.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-xs">
+                      <p>Lote: {vaccine.lot}</p>
+                      <p className="truncate text-gray-500">{vaccine.blockchainHash.substring(0, 16)}...</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          {filteredVaccines.length > 5 && (
+            <div className="mt-4 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? 'Mostrar menos' : `Ver todos (${filteredVaccines.length - 5} más)`}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Add Vaccine Modal */}
       <AddVaccineModal 

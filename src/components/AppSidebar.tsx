@@ -1,84 +1,137 @@
-
-import { Heart, Users, Calendar, TestTube, Pill, FileText, Home, Wifi, Stethoscope } from "lucide-react"
-import { NavLink, useLocation } from "react-router-dom"
-
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar"
+  LayoutDashboard,
+  Heart,
+  Users,
+  Calendar,
+  TestTube,
+  Stethoscope,
+  ShoppingBag,
+  FileText,
+  Wifi,
+  Settings,
+  HelpCircle,
+  LogOut,
+  ChevronsLeft,
+  Syringe,
+} from "lucide-react"
+import { useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
 
-const items = [
-  { title: "Inicio", url: "/", icon: Home },
-  { title: "Mascotas", url: "/mascotas", icon: Heart },
-  { title: "Dueños", url: "/duenos", icon: Users },
-  { title: "Servicios", url: "/servicios", icon: Stethoscope },
-  { title: "Vacunas", url: "/vacunas", icon: Calendar },
-  { title: "Farmacia", url: "/farmacia", icon: Pill },
-  { title: "Laboratorio", url: "/laboratorio", icon: TestTube },
-  { title: "Control Interno", url: "/marketplace", icon: FileText },
-  { title: "IoT Monitor", url: "/iot", icon: Wifi },
+interface MenuItemProps {
+  title: string
+  url: string
+  icon: any
+}
+
+const menuItems = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Mascotas",
+    url: "/mascotas",
+    icon: Heart,
+  },
+  {
+    title: "Dueños",
+    url: "/duenos",
+    icon: Users,
+  },
+  {
+    title: "Vacunas",
+    url: "/vacunas",
+    icon: Syringe,
+  },
+  {
+    title: "Gestor de Calendario",
+    url: "/calendar",
+    icon: Calendar,
+  },
+  {
+    title: "Laboratorio",
+    url: "/laboratorio",
+    icon: TestTube,
+  },
+  {
+    title: "Servicios",
+    url: "/servicios",
+    icon: Stethoscope,
+  },
+  {
+    title: "Farmacia",
+    url: "/farmacia",
+    icon: ShoppingBag,
+  },
+  {
+    title: "Control Interno y Facturación",
+    url: "/marketplace",
+    icon: FileText,
+  },
+  {
+    title: "IoT Dashboard",
+    url: "/iot-dashboard",
+    icon: Wifi,
+  },
 ]
 
 export function AppSidebar() {
-  const { state } = useSidebar()
-  const collapsed = state === "collapsed"
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const location = useLocation()
-  const currentPath = location.pathname
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
 
-  const isActive = (path: string) => currentPath === path
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-blue-100 text-blue-700 border-r-2 border-blue-700" : "hover:bg-gray-100"
+  const handleSignOut = async () => {
+    await signOut()
+    navigate("/login")
+  }
 
   return (
-    <Sidebar
-      className={`${collapsed ? "w-14" : "w-64"} bg-white border-r border-gray-200`}
-      collapsible="icon"
+    <aside
+      className={cn(
+        "flex flex-col bg-gray-50 border-r h-screen fixed top-0 left-0 z-50",
+        isCollapsed ? "w-16" : "w-64"
+      )}
     >
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg flex items-center justify-center">
-            <Heart className="w-5 h-5 text-white" />
-          </div>
-          {!collapsed && (
-            <div>
-              <h1 className="font-bold text-xl text-gray-800">VetTrack</h1>
-              <p className="text-xs text-gray-500">Gestión Veterinaria</p>
-            </div>
-          )}
-        </div>
+      <div className="flex items-center justify-end p-4">
+        <ChevronsLeft
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer transition-colors"
+        />
       </div>
 
-      <SidebarTrigger className="m-2 self-end" />
+      <nav className="flex-1 px-2 py-4">
+        <ul>
+          {menuItems.map((item: MenuItemProps) => (
+            <li key={item.title} className="mb-1">
+              <Link
+                to={item.url}
+                className={cn(
+                  "flex items-center p-2 rounded-md text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-colors",
+                  location.pathname === item.url && "bg-gray-200 text-gray-900"
+                )}
+              >
+                <item.icon
+                  className={cn("w-5 h-5 mr-2", isCollapsed ? "mr-0" : "")}
+                />
+                {!isCollapsed && <span>{item.title}</span>}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-600 font-medium">
-            {!collapsed && "Navegación Principal"}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink to={item.url} end className={getNavCls}>
-                      <item.icon className="h-5 w-5" />
-                      {!collapsed && <span className="font-medium">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+      <div className="p-4">
+        <div className="border-t border-gray-200 pt-4">
+          <div className="flex items-center p-2 rounded-md text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer" onClick={handleSignOut}>
+            <LogOut className="w-5 h-5 mr-2" />
+            {!isCollapsed && <span>Cerrar Sesión</span>}
+          </div>
+        </div>
+      </div>
+    </aside>
   )
 }
