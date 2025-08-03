@@ -14,10 +14,12 @@ Sistema integral de gestión veterinaria desarrollado para la República del Ecu
 ## 🚀 Características Principales
 
 ### 🏥 Gestión Clínica Veterinaria
-- **Registro de Mascotas**: Sistema completo de historiales médicos
-- **Gestión de Dueños**: Base de datos de propietarios con documentación
-- **Control de Vacunas**: Seguimiento de esquemas de vacunación y alertas
-- **Gestor de Calendario**: Coordinación de citas y alertas de vencimiento
+- **Registro de Mascotas**: Sistema completo de historiales médicos con arquitectura modular
+- **Gestión de Dueños**: Base de datos de propietarios con documentación y validación Zod
+- **Control de Vacunas**: Seguimiento de esquemas de vacunación y alertas automatizadas
+- **Calendario Avanzado**: Sistema interactivo con react-big-calendar y drag & drop
+- **Gestión de Estado**: Implementación con Zustand para mejor rendimiento
+- **Validación Robusta**: Esquemas Zod para validación de datos en tiempo real
 
 ### 🛡️ Control Policial de Especies
 - **Registro de Especies en Peligro**: Catálogo oficial de fauna protegida
@@ -49,12 +51,14 @@ Sistema integral de gestión veterinaria desarrollado para la República del Ecu
 ### Librerías y Dependencias
 - **React Router Dom**: Enrutamiento de aplicación
 - **React Hook Form**: Gestión de formularios
+- **Zustand**: Gestión de estado moderna y eficiente
 - **Tanstack Query**: Manejo de estado del servidor
-- **Radix UI**: Componentes accesibles
-- **Lucide React**: Iconografía
-- **Recharts**: Gráficos y visualizaciones
-- **Date-fns**: Manipulación de fechas
-- **Zod**: Validación de esquemas
+- **Radix UI**: Componentes accesibles con ARIA completo
+- **React Big Calendar**: Calendario interactivo avanzado
+- **Zod**: Validación de esquemas robusta
+- **Sentry**: Monitoreo de errores en producción
+- **Cypress**: Pruebas E2E automatizadas
+- **React Lazy Load**: Optimización de carga de imágenes
 
 ### Backend y Base de Datos
 - **Supabase**: Backend como servicio
@@ -67,18 +71,22 @@ Sistema integral de gestión veterinaria desarrollado para la República del Ecu
 ```
 src/
 ├── components/           # Componentes reutilizables
-│   ├── ui/              # Componentes base de UI
+│   ├── ui/              # Componentes base de UI con accesibilidad
 │   ├── modals/          # Modales del sistema
-│   └── ...              # Componentes específicos
-├── pages/               # Páginas principales
-│   ├── Dashboard.tsx    # Panel principal
-│   ├── Mascotas.tsx     # Gestión de mascotas
-│   ├── ControlPolicial.tsx # Control de especies
-│   └── ...              # Otras páginas
-├── hooks/               # Hooks personalizados
-├── layouts/             # Layouts de página
-├── lib/                 # Utilidades y configuración
-└── main.tsx            # Punto de entrada
+│   └── CalendarView.tsx # Calendario avanzado
+├── modules/             # Arquitectura modular por dominio
+│   └── pets/           # Módulo de mascotas
+│       ├── components/ # Componentes específicos
+│       ├── services/   # Repository Pattern
+│       └── types/      # Tipos TypeScript
+├── stores/             # Gestión de estado con Zustand
+├── contexts/           # Contextos React (Loading, etc.)
+├── lib/                # Utilidades y validaciones Zod
+├── utils/              # Sentry y monitoreo
+├── pages/              # Páginas principales
+├── cypress/            # Pruebas E2E
+├── docker-compose.yml  # Configuración Docker
+└── Dockerfile.*        # Dockerfiles para despliegue
 ```
 
 ## 🚀 Instalación y Configuración

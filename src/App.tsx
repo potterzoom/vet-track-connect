@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/hooks/useAuth"
+import { LoadingProvider } from "@/contexts/LoadingContext"
+import { initSentry } from "@/utils/sentry"
 import Layout from "@/layouts/Layout"
 import Dashboard from "@/pages/Dashboard"
 import Mascotas from "@/pages/Mascotas"
@@ -19,12 +21,16 @@ import ControlPolicial from "@/pages/ControlPolicial"
 
 const queryClient = new QueryClient()
 
+// Initialize Sentry for error monitoring
+initSentry()
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Toaster />
-        <BrowserRouter>
+      <LoadingProvider>
+        <AuthProvider>
+          <Toaster />
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
@@ -43,7 +49,8 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </QueryClientProvider>
+    </LoadingProvider>
+  </QueryClientProvider>
   )
 }
 
