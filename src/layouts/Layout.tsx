@@ -2,6 +2,7 @@
 import { ReactNode } from "react"
 import { Outlet } from "react-router-dom"
 import { AppSidebar } from "@/components/AppSidebar"
+import { Footer } from "@/components/Footer"
 
 interface LayoutProps {
   children?: ReactNode
@@ -22,6 +23,8 @@ export default function Layout({ children }: LayoutProps) {
         <main className="flex-1 p-6">
           {children || <Outlet />}
         </main>
+        
+        <Footer />
       </div>
     </div>
   )
